@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:id="@+id/img_one"
+        android:background="@drawable/img_layout_border"
+        android:layout_margin="1dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:layout_weight="1"
+            android:background="@drawable/img_layout_border"
+            android:id="@+id/img_two"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            android:id="@+id/color_layout"
+            android:layout_weight="1"
+            android:background="@drawable/img_layout">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:id="@+id/layout_item_text_three"
+                android:gravity="center_horizontal"
+                android:textSize="20dp"
+                android:layout_gravity="center_horizontal|bottom"
+                android:textColor="#ffffffff"
+                android:text="Title" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:layout_gravity="center_horizontal|bottom"
+                android:id="@+id/layout_item_subtext_three"
+                android:layout_below="@+id/layout_item_text_three"
+                android:gravity="center_horizontal"
+                android:textColor="#ffffffff"
+                android:text="Sub Title" />
+            </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>
