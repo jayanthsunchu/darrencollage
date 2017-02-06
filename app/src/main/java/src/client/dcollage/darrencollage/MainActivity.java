@@ -8,6 +8,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -39,6 +41,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -51,6 +54,7 @@ import src.client.dcollage.darrencollage.fragments.OptionsFragment;
 import src.client.dcollage.darrencollage.helpers.Constant;
 
 import static android.R.attr.bitmap;
+import static android.app.Activity.RESULT_OK;
 import static java.lang.reflect.Array.getInt;
 import static java.lang.reflect.Array.set;
 import static java.security.AccessController.getContext;
@@ -312,25 +316,73 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
         }
     }
 
+    private Bitmap RotateIf(Uri data){
+        Bitmap myBitmap = null;
+        try {
+            myBitmap = MediaStore.Images.Media.getBitmap(MainActivity.this.getContentResolver(), data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            File myFile = new File(data.toString());
+            ExifInterface exif = new ExifInterface(myFile.getAbsolutePath());
+            int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED);
+            Matrix matrix = new Matrix();
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) {
+                matrix.postRotate(90);
+            }
+            else if (orientation == ExifInterface.ORIENTATION_ROTATE_180) {
+                matrix.postRotate(180);
+            }
+            else if (orientation == ExifInterface.ORIENTATION_ROTATE_270) {
+                matrix.postRotate(270);
+            }
+            myBitmap = Bitmap.createBitmap(myBitmap, 0, 0, myBitmap.getWidth(), myBitmap.getHeight(), matrix, true); // rotating bitmap
+        }
+        catch (Exception e) {
+        }
+        return myBitmap;
+    }
+
+    public Uri getImageUri(Context inContext, Bitmap inImage) {
+        String path ="";
+        try {
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+            path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+        }
+        catch(Exception e){
+            Log.e("Testing", "getImageUri" + e.getMessage());
+        }
+        return Uri.parse(path);
+    }
+
     private int LAYOUT_FLAG = 0;
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ImgTop.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        ImgTop.setScaleType(ImageView.ScaleType.FIT_XY);
         if(LAYOUT_FLAG == 1)
-            ImgBottom.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            ImgBottom.setScaleType(ImageView.ScaleType.FIT_XY);
         if (requestCode == SELECT_PICTURE) {
             if (data != null && data.getData() != null) {
                 Uri imageURI = data.getData();
+                Bitmap bmp = RotateIf(imageURI);
+                imageURI = getImageUri(MainActivity.this, bmp);
+
                 if (LAYOUT_FLAG == 0)
                     ImgTop.setImageURI(imageURI);
                 else
                     ImgBottom.setImageURI(imageURI);
             } else if (resultCode == RESULT_OK) {
+                Bitmap bmp = RotateIf(uriSavedImage);
+                Uri imageURI = getImageUri(MainActivity.this, bmp);
+
                 if (LAYOUT_FLAG == 0)
-                    ImgTop.setImageURI(uriSavedImage);
+                    ImgTop.setImageURI(imageURI);
                 else
-                    ImgBottom.setImageURI(uriSavedImage);
+                    ImgBottom.setImageURI(imageURI);
             }
         }
     }
@@ -353,7 +405,7 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
         File image = new File(Environment.getExternalStorageDirectory(), "DarrenPic.png");
         uriSavedImage = Uri.fromFile(image);
         takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriSavedImage);
-        String pickTitle = "Upload Profile Picture";
+        String pickTitle = "Upload Picture";
         Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
         chooserIntent.putExtra
                 (
