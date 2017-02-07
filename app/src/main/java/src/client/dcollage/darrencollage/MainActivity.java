@@ -256,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements DialogCloseListen
                 @Override
                 public void onClick(View view) {
                     ColorPicker colorPicker = new ColorPicker(view.getContext());
+                    colorPicker.setColors(R.array.collage);
                     colorPicker.show();
                     colorPicker.setOnChooseColorListener(new ColorPicker.OnChooseColorListener() {
                         @Override

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="collage">
+    <item name="one">#FED141</item>
+    <item name="two">#888B8D</item>
+    <item name="three">#64CCC9</item>
+    <item name="four">#8BB8E8</item>
+    <item name="five">#9595D2</item>
+    <item name="six">#DD7FD3</item>
+    <item name="seven">#F67599</item>
+    <item name="eight">#FF9D6E</item>
+    </array>
+</resources>
